@@ -6,35 +6,54 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.eagle_eye_v2.screens.data_collection_screen.DataCollectionScreen
+import com.example.eagle_eye_v2.screens.main_screen.MainScreen
 import com.example.eagle_eye_v2.ui.theme.Eagle_Eye_v2Theme
 
 class MainActivity : ComponentActivity() {
+  lateinit var navControler:NavHostController
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContent {
       Eagle_Eye_v2Theme {
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-          Greeting("Android")
+          ScreenMain()
         }
       }
     }
   }
 }
 
-@Composable
-fun Greeting(name: String) {
-  Text(text = "Hello $name!")
+
+
+sealed class NavRoutes(val route: String) {
+  object Home : NavRoutes("home")
+  object DataCollection : NavRoutes("dc")
 }
 
-@Preview(showBackground = true)
+
+@Preview
 @Composable
-fun DefaultPreview() {
-  Eagle_Eye_v2Theme {
-    Greeting("Android")
+fun ScreenMain() {
+
+  val navController = rememberNavController()
+
+  NavHost(navController = navController, startDestination = NavRoutes.Home.route) {
+
+    // First route : Home
+    composable(NavRoutes.Home.route) {
+      MainScreen(nc = navController)
+    }
+    composable(NavRoutes.DataCollection.route) {
+      DataCollectionScreen(nc = navController)
+    }
   }
 }
