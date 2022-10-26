@@ -1,6 +1,8 @@
 package com.example.eagle_eye_v2
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,16 +11,13 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.eagle_eye_v2.screens.data_collection_screen.DataCollectionScreen
-import com.example.eagle_eye_v2.screens.main_screen.MainScreen
+import com.example.eagle_eye_v2.screens.camera.CameraView
 import com.example.eagle_eye_v2.ui.theme.Eagle_Eye_v2Theme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
-  lateinit var navControler:NavHostController
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContent {
@@ -32,28 +31,21 @@ class MainActivity : ComponentActivity() {
   }
 }
 
-
-
 sealed class NavRoutes(val route: String) {
   object Home : NavRoutes("home")
   object DataCollection : NavRoutes("dc")
 }
 
-
 @Preview
 @Composable
 fun ScreenMain() {
+  val  scope = CoroutineScope(Dispatchers.Default)
+  CameraView(onImageCaptured = { uri, fromGallery ->
+    Log.d(TAG, "Image Uri Captured from Camera View")
 
-  val navController = rememberNavController()
-
-  NavHost(navController = navController, startDestination = NavRoutes.Home.route) {
-
-    // First route : Home
-    composable(NavRoutes.Home.route) {
-      MainScreen(nc = navController)
-    }
-    composable(NavRoutes.DataCollection.route) {
-      DataCollectionScreen(nc = navController)
-    }
-  }
+  }, onError = { imageCaptureException ->
+     scope.launch {
+       Log.d(TAG, "Image Uri Captured from Camera View")
+     }
+  })
 }
